@@ -1,6 +1,6 @@
 /* jshint node: true */
 'use strict';
-var compress = require('brotli/compress');
+var compressStream  = require('iltorb').compressStream;
 var Promise   = require('ember-cli/lib/ext/promise');
 var fs        = require('fs');
 var path      = require('path');
@@ -66,8 +66,14 @@ module.exports = {
         var fullPath = path.join(distDir, filePath);
         var outFilePath = fullPath + '.br';
         return new Promise(function(resolve, _reject) {
-          var compressed = compress(fs.readFileSync(fullPath), true);
-          fs.writeFileSync(outFilePath, compressed.toString());
+          var brotliParams = {
+            quality: 11
+          };
+          fs.createReadStream(fullPath)
+            .pipe(compressStream(brotliParams))
+            .pipe(fs.createWriteStream(outFilePath));
+          // var compressed = compress(fs.readFileSync(fullPath), true);
+          // fs.writeFileSync(outFilePath, compressed.toString());
           resolve(filePath + '.br');
         }).then(function(outFilePath) {
           self.log('✔  ' + outFilePath, { verbose: true });
