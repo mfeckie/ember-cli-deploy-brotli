@@ -67,7 +67,7 @@ module.exports = {
         var outFilePath = fullPath + '.br';
         return new Promise(function(resolve, _reject) {
           var compressed = compress(fs.readFileSync(fullPath), true);
-          fs.write(outFilePath, compressed.toString());
+          fs.writeFileSync(outFilePath, compressed.toString());
           resolve(filePath + '.br');
         }).then(function(outFilePath) {
           self.log('✔  ' + outFilePath, { verbose: true });
