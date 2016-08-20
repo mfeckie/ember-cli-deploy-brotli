@@ -7,7 +7,7 @@ var fs  = require('fs');
 var path  = require('path');
 var rimraf  = Promise.denodeify(require('rimraf'));
 
-describe('gzip plugin', function() {
+describe('brotli plugin', function() {
   var subject, mockUi, config;
 
   beforeEach(function() {

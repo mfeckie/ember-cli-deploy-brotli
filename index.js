@@ -39,12 +39,11 @@ module.exports = {
         var distFiles       = this.readConfig('distFiles') || [];
         var keep            = this.readConfig('keep');
 
-        this.log('gzipping `' + filePattern + '`', { verbose: true });
+        this.log('Compressing with brotli `' + filePattern + '`', { verbose: true });
         this.log('ignoring `' + ignorePattern + '`', { verbose: true });
         return this._gzipFiles(distDir, distFiles, filePattern, ignorePattern, keep)
           .then(function(compressedFiles) {
-            self.log('gzipped ' + compressedFiles.length + ' files ok', { verbose: true });
-              self.log('keep is enabled, added gzipped files to `context.distFiles`', { verbose: true });
+            self.log('Compressed with brotli ' + compressedFiles.length + ' files ok', { verbose: true });
               return {
                 distFiles: [].concat(compressedFiles), // needs to be a copy
                 compressedFiles: compressedFiles
@@ -72,8 +71,6 @@ module.exports = {
           fs.createReadStream(fullPath)
             .pipe(compressStream(brotliParams))
             .pipe(fs.createWriteStream(outFilePath));
-          // var compressed = compress(fs.readFileSync(fullPath), true);
-          // fs.writeFileSync(outFilePath, compressed.toString());
           resolve(filePath + '.br');
         }).then(function(outFilePath) {
           self.log('✔  ' + outFilePath, { verbose: true });
