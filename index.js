@@ -1,7 +1,6 @@
 /* jshint node: true */
 'use strict';
-var brotli = require('brotli');
-
+var compress = require('brotli/compress');
 var Promise   = require('ember-cli/lib/ext/promise');
 var fs        = require('fs');
 var path      = require('path');
@@ -23,8 +22,7 @@ module.exports = {
       defaultConfig: {
         filePattern: '**/*.{js,css,json,ico,map,xml,txt,svg,eot,ttf,woff,woff2}',
         ignorePattern: null,
-        zopfli: false,
-        keep: false,
+        keep: true,
         distDir: function(context){
           return context.distDir;
         },
@@ -32,17 +30,6 @@ module.exports = {
           return context.distFiles;
         }
       },
-
-      configure: function(context) {
-        this._super.configure.call(this, context);
-        if (this.readConfig('zopfli')) {
-          this.log("Using zopfli for compression", { verbose: true });
-          this.gzipLibrary = this.project.require('node-zopfli');
-        } else {
-          this.gzipLibrary = require('zlib');
-        }
-      },
-
       willUpload: function(context) {
         var self = this;
 
@@ -55,16 +42,13 @@ module.exports = {
         this.log('gzipping `' + filePattern + '`', { verbose: true });
         this.log('ignoring `' + ignorePattern + '`', { verbose: true });
         return this._gzipFiles(distDir, distFiles, filePattern, ignorePattern, keep)
-          .then(function(gzippedFiles) {
-            self.log('gzipped ' + gzippedFiles.length + ' files ok', { verbose: true });
-            if (keep) {
+          .then(function(compressedFiles) {
+            self.log('gzipped ' + compressedFiles.length + ' files ok', { verbose: true });
               self.log('keep is enabled, added gzipped files to `context.distFiles`', { verbose: true });
               return {
-                distFiles: [].concat(gzippedFiles), // needs to be a copy
-                gzippedFiles: gzippedFiles
+                distFiles: [].concat(compressedFiles), // needs to be a copy
+                compressedFiles: compressedFiles
               };
-            }
-            return { gzippedFiles: gzippedFiles };
           })
           .catch(this._errorMessage.bind(this));
       },
@@ -80,33 +64,13 @@ module.exports = {
       _gzipFile: function(distDir, keep, filePath) {
         var self = this;
         var fullPath = path.join(distDir, filePath);
-        var outFilePath = fullPath + '.gz';
-        return new Promise(function(resolve, reject) {
-          var gzip = self.gzipLibrary.createGzip({ format: 'gzip' });
-          var inp = fs.createReadStream(fullPath);
-          var out = fs.createWriteStream(outFilePath);
-
-          inp.pipe(gzip).pipe(out);
-          inp.on('error', function(err){
-            reject(err);
-          });
-          out.on('error', function(err){
-            reject(err);
-          });
-          out.on('finish', function(){
-            resolve();
-          });
-        }).then(function(){
-          if(!keep) {
-            return renameFile(fullPath + '.gz', fullPath).then(function() {
-              return filePath;
-            });
-          } else {
-            return filePath + '.gz';
-          }
-        }).then(function(outFilePath){
+        var outFilePath = fullPath + '.br';
+        return new Promise(function(resolve, _reject) {
+          var compressed = compress(fs.readFileSync(fullPath));
+          fs.writeFileSync(outFilePath, compressed);
+          resolve(filePath + '.br');
+        }).then(function(outFilePath) {
           self.log('✔  ' + outFilePath, { verbose: true });
-
           return outFilePath;
         });
       },
