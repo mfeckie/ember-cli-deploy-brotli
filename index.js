@@ -66,7 +66,7 @@ module.exports = {
         var fullPath = path.join(distDir, filePath);
         var outFilePath = fullPath + '.br';
         return new Promise(function(resolve, _reject) {
-          var compressed = compress(fs.readFileSync(fullPath));
+          var compressed = compress(fs.readFileSync(fullPath), true);
           fs.writeFileSync(outFilePath, compressed);
           resolve(filePath + '.br');
         }).then(function(outFilePath) {
