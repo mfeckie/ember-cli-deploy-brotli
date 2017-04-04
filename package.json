@@ -1,15 +1,14 @@
 {
   "name": "ember-cli-deploy-brotli",
   "version": "0.1.3",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Brotli compression support for ember-cli-deploy",
   "keywords": [
     "ember-addon",
     "ember-cli-deploy-plugin"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "Martin Feckie",
   "directories": {
-    "doc": "doc",
     "test": "tests"
   },
   "repository": "",
