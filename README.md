@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mfeckie/ember-cli-deploy-brotli.svg?branch=master)](https://travis-ci.org/mfeckie/ember-cli-deploy-brotli)
+
 # Ember-cli-deploy-brotli
 
 This plugin is heavily influenced by https://github.com/ember-cli-deploy/ember-cli-deploy-gzip, but provides brotli compression.
