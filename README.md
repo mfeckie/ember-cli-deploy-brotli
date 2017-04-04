@@ -8,7 +8,7 @@ This plugin is heavily influenced by https://github.com/ember-cli-deploy/ember-c
 
 To get up and running quickly, do the following:
 
-- Ensure [ember-cli-deploy-build][2] is installed and configured.
+- Ensure [ember-cli-deploy-build](https://github.com/ember-cli-deploy/ember-cli-deploy-build) is installed and configured.
 
 - Install this plugin
 
