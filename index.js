@@ -11,10 +11,6 @@ var DeployPluginBase = require('ember-cli-deploy-plugin');
 module.exports = {
   name: 'ember-cli-deploy-brotli',
 
-  afterInstall: function() {
-    return this.addPackageToProject('iltorb');
-  },
-
   createDeployPlugin: function(options) {
     var fs = require('fs');
 
