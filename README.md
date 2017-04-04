@@ -1,26 +1,25 @@
 # Ember-cli-deploy-brotli
 
-This README outlines the details of collaborating on this Ember addon.
+This plugin is heavily influenced by https://github.com/ember-cli-deploy/ember-cli-deploy-gzip, but provides brotli compression.
 
-## Installation
+## Quick Start
 
-* `git clone` this repository
-* `npm install`
-* `bower install`
+To get up and running quickly, do the following:
 
-## Running
+- Ensure [ember-cli-deploy-build][2] is installed and configured.
 
-* `ember serve`
-* Visit your app at http://localhost:4200.
+- Install this plugin
 
-## Running Tests
+```bash
+$ ember install ember-cli-deploy-brotli
+```
 
-* `npm test` (Runs `ember try:testall` to test your addon against multiple Ember versions)
-* `ember test`
-* `ember test --server`
+- Run the pipeline
 
-## Building
+```bash
+$ ember deploy
+```
 
-* `ember build`
+## Configuration
 
-For more information on using ember-cli, visit [http://ember-cli.com/](http://ember-cli.com/).
+This plugin does not require any configuration, it will simply add a brotli compressed version of relevant assets (js, css, images etc.)
