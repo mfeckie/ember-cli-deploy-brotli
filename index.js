@@ -1,13 +1,10 @@
-/* jshint node: true */
+/*eslint-env node*/
 'use strict';
+
 var compressStream  = require('iltorb').compressStream;
-var Promise   = require('ember-cli/lib/ext/promise');
-var fs        = require('fs');
+var RSVP   = require('rsvp');
 var path      = require('path');
 var minimatch = require('minimatch');
-
-var denodeify = require('rsvp').denodeify;
-var renameFile  = denodeify(fs.rename);
 
 var DeployPluginBase = require('ember-cli-deploy-plugin');
 
@@ -30,7 +27,7 @@ module.exports = {
           return context.distFiles;
         }
       },
-      willUpload: function(context) {
+      willUpload: function() {
         var self = this;
 
         var filePattern     = this.readConfig('filePattern');
@@ -41,7 +38,7 @@ module.exports = {
 
         this.log('Compressing with brotli `' + filePattern + '`', { verbose: true });
         this.log('ignoring `' + ignorePattern + '`', { verbose: true });
-        return this._gzipFiles(distDir, distFiles, filePattern, ignorePattern, keep)
+        return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern, keep)
           .then(function(compressedFiles) {
             self.log('Compressed with brotli ' + compressedFiles.length + ' files ok', { verbose: true });
               return {
@@ -51,35 +48,45 @@ module.exports = {
           })
           .catch(this._errorMessage.bind(this));
       },
-      _gzipFiles: function(distDir, distFiles, filePattern, ignorePattern, keep) {
-        var filesToGzip = distFiles.filter(minimatch.filter(filePattern, { matchBase: true }));
+      _compressedFiles: function(distDir, distFiles, filePattern, ignorePattern, keep) {
+        var filesToCompress = distFiles.filter(minimatch.filter(filePattern, { matchBase: true }));
         if (ignorePattern != null) {
-            filesToGzip = filesToGzip.filter(function(path){
+            filesToCompress = filesToCompress.filter(function(path){
               return !minimatch(path, ignorePattern, { matchBase: true });
             });
         }
-        return Promise.map(filesToGzip, this._gzipFile.bind(this, distDir, keep));
+        return RSVP.map(filesToCompress, this._compressFile.bind(this, distDir, keep));
       },
-      _gzipFile: function(distDir, keep, filePath) {
+      _compressFile: function(distDir, keep, filePath) {
         var self = this;
         var fullPath = path.join(distDir, filePath);
         var outFilePath = fullPath + '.br';
-        return new Promise(function(resolve, _reject) {
+        return new RSVP.Promise(function(resolve, reject) {
           var brotliParams = {
             quality: 11
           };
-          fs.createReadStream(fullPath)
-            .pipe(compressStream(brotliParams))
-            .pipe(fs.createWriteStream(outFilePath));
-          resolve(filePath + '.br');
-        }).then(function(outFilePath) {
+          var inp = fs.createReadStream(fullPath);
+          var out = fs.createWriteStream(outFilePath);
+
+          inp.pipe(compressStream(brotliParams)).pipe(out);
+          inp.on('error', function(err){
+            reject(err);
+          });
+          out.on('error', function(err){
+            reject(err);
+          });
+          out.on('finish', function(){
+            resolve(filePath + '.br');
+          });
+        }).then(function(outFilePath){
           self.log('✔  ' + outFilePath, { verbose: true });
+
           return outFilePath;
         });
       },
       _errorMessage: function(error) {
         this.log(error, { color: 'red' });
-        return Promise.reject(error);
+        return RSVP.reject(error);
       }
     });
     return new DeployPlugin();
