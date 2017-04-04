@@ -19,7 +19,6 @@ module.exports = {
       defaultConfig: {
         filePattern: '**/*.{js,css,json,ico,map,xml,txt,svg,eot,ttf,woff,woff2}',
         ignorePattern: null,
-        keep: true,
         distDir: function(context){
           return context.distDir;
         },
@@ -34,11 +33,10 @@ module.exports = {
         var ignorePattern   = this.readConfig('ignorePattern');
         var distDir         = this.readConfig('distDir');
         var distFiles       = this.readConfig('distFiles') || [];
-        var keep            = this.readConfig('keep');
 
         this.log('Compressing with brotli `' + filePattern + '`', { verbose: true });
         this.log('ignoring `' + ignorePattern + '`', { verbose: true });
-        return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern, keep)
+        return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern)
           .then(function(compressedFiles) {
             self.log('Compressed with brotli ' + compressedFiles.length + ' files ok', { verbose: true });
               return {
@@ -48,16 +46,16 @@ module.exports = {
           })
           .catch(this._errorMessage.bind(this));
       },
-      _compressedFiles: function(distDir, distFiles, filePattern, ignorePattern, keep) {
+      _compressedFiles: function(distDir, distFiles, filePattern, ignorePattern) {
         var filesToCompress = distFiles.filter(minimatch.filter(filePattern, { matchBase: true }));
         if (ignorePattern != null) {
             filesToCompress = filesToCompress.filter(function(path){
               return !minimatch(path, ignorePattern, { matchBase: true });
             });
         }
-        return RSVP.map(filesToCompress, this._compressFile.bind(this, distDir, keep));
+        return RSVP.map(filesToCompress, this._compressFile.bind(this, distDir));
       },
-      _compressFile: function(distDir, keep, filePath) {
+      _compressFile: function(distDir, filePath) {
         var self = this;
         var fullPath = path.join(distDir, filePath);
         var outFilePath = fullPath + '.br';
