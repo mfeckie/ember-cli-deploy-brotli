@@ -12,6 +12,8 @@ A plugin is an addon that can be executed as a part of the ember-cli-deploy pipe
 
 To get up and running quickly, do the following:
 
+- Ensure [ember-cli-deploy](https://github.com/ember-cli-deploy/ember-cli-deploy) is installed and configured.
+
 - Ensure [ember-cli-deploy-build](https://github.com/ember-cli-deploy/ember-cli-deploy-build) is installed and configured.
 
 - Install this plugin
