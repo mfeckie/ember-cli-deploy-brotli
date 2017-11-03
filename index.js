@@ -37,11 +37,11 @@ module.exports = {
         this.log('Compressing with brotli `' + filePattern + '`', { verbose: true });
         this.log('ignoring `' + ignorePattern + '`', { verbose: true });
         return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern)
-          .then(function(compressedFiles) {
-            self.log('Compressed with brotli ' + compressedFiles.length + ' files ok', { verbose: true });
+          .then(function(brotliCompressedFiles) {
+            self.log('Compressed with brotli ' + brotliCompressedFiles.length + ' files ok', { verbose: true });
               return {
-                distFiles: [].concat(compressedFiles), // needs to be a copy
-                compressedFiles: compressedFiles
+                distFiles: [].concat(brotliCompressedFiles), // needs to be a copy
+                brotliCompressedFiles
               };
           })
           .catch(this._errorMessage.bind(this));

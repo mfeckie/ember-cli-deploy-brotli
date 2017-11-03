@@ -112,5 +112,16 @@ describe('brotli plugin', function() {
           done(reason);
         });
     });
+
+    it('adds the brotli files to the distFiles', function(done) {
+      assert.isFulfilled(plugin.willUpload(context))
+        .then(function(result) {
+          assert.include(result.distFiles, 'assets/foo.js.br');
+          assert.include(result.brotliCompressedFiles, 'assets/foo.js.br')
+          done();
+        }).catch(function(reason){
+          done(reason);
+        });
+    });
   });
 });
