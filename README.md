@@ -72,6 +72,12 @@ The list of built project files. This option should be relative to `distDir` and
 
 *Default:* `context.distDir`
 
+### keep
+
+Keep original file and write compressed data to `originalFile.br`
+
+*Default:* `false`
+
 ## Prequisites
 
 The following properties are expected to be present on the deployment `context` object:

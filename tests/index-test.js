@@ -103,25 +103,54 @@ describe('brotli plugin', function() {
       return rimraf(context.distDir);
     });
 
-    it('adds the br suffix to the distFiles', function(done) {
-      plugin.willUpload(context)
-        .then(function(result) {
-          assert.include(result.distFiles, 'assets/foo.js.br');
-          done();
-        }).catch(function(reason){
-          done(reason);
-        });
+    describe('When the `keep` option is set to true', function() {
+      beforeEach(function() {
+        context.config.brotli.keep = true;
+      });
+
+      it('adds the br suffix to the distFiles', function (done) {
+        plugin.willUpload(context)
+          .then(function (result) {
+            assert.include(result.distFiles, 'assets/foo.js.br');
+            done();
+          }).catch(function (reason) {
+            done(reason);
+          });
+      });
+
+      it('adds the brotli files to the distFiles', function (done) {
+        assert.isFulfilled(plugin.willUpload(context))
+          .then(function (result) {
+            assert.include(result.distFiles, 'assets/foo.js.br');
+            assert.include(result.brotliCompressedFiles, 'assets/foo.js.br')
+            done();
+          }).catch(function (reason) {
+            done(reason);
+          });
+      });
     });
 
-    it('adds the brotli files to the distFiles', function(done) {
-      assert.isFulfilled(plugin.willUpload(context))
-        .then(function(result) {
-          assert.include(result.distFiles, 'assets/foo.js.br');
-          assert.include(result.brotliCompressedFiles, 'assets/foo.js.br')
-          done();
-        }).catch(function(reason){
-          done(reason);
-        });
+    describe('When the `keep` option is left blank or set to true', function() {
+      it('does not the br suffix to the distFiles', function(done) {
+        plugin.willUpload(context)
+          .then(function(result) {
+            assert.include(result.distFiles, 'assets/foo.js');
+            done();
+          }).catch(function(reason){
+            done(reason);
+          });
+      });
+
+      it('adds the brotli files to the distFiles', function(done) {
+        assert.isFulfilled(plugin.willUpload(context))
+          .then(function(result) {
+            assert.include(result.distFiles, 'assets/foo.js');
+            assert.include(result.brotliCompressedFiles, 'assets/foo.js')
+            done();
+          }).catch(function(reason){
+            done(reason);
+          });
+      });
     });
   });
 });
