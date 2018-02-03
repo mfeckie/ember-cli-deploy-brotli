@@ -1,10 +1,14 @@
 /*eslint-env node*/
 'use strict';
 
-var compressStream  = require('iltorb').compressStream;
-var RSVP   = require('rsvp');
-var path      = require('path');
+var fs = require('fs');
+var compressStream = require('iltorb').compressStream;
+var RSVP = require('rsvp');
+var path = require('path');
 var minimatch = require('minimatch');
+
+var denodeify = RSVP.denodeify;
+var renameFile  = denodeify(fs.rename);
 
 var DeployPluginBase = require('ember-cli-deploy-plugin');
 
@@ -19,6 +23,7 @@ module.exports = {
       defaultConfig: {
         filePattern: '**/*.{js,css,json,ico,map,xml,txt,svg,eot,ttf,woff,woff2}',
         ignorePattern: null,
+        keep: false,
         distDir: function(context){
           return context.distDir;
         },
@@ -33,29 +38,30 @@ module.exports = {
         var ignorePattern   = this.readConfig('ignorePattern');
         var distDir         = this.readConfig('distDir');
         var distFiles       = this.readConfig('distFiles') || [];
+        var keep            = this.readConfig('keep');
 
         this.log('Compressing with brotli `' + filePattern + '`', { verbose: true });
         this.log('ignoring `' + ignorePattern + '`', { verbose: true });
-        return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern)
+        return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern, keep)
           .then(function(brotliCompressedFiles) {
             self.log('Compressed with brotli ' + brotliCompressedFiles.length + ' files ok', { verbose: true });
-              return {
-                distFiles: [].concat(brotliCompressedFiles), // needs to be a copy
-                brotliCompressedFiles
-              };
+            return {
+              distFiles: [].concat(brotliCompressedFiles), // needs to be a copy
+              brotliCompressedFiles
+            };
           })
           .catch(this._errorMessage.bind(this));
       },
-      _compressedFiles: function(distDir, distFiles, filePattern, ignorePattern) {
+      _compressedFiles: function(distDir, distFiles, filePattern, ignorePattern, keep) {
         var filesToCompress = distFiles.filter(minimatch.filter(filePattern, { matchBase: true }));
         if (ignorePattern != null) {
             filesToCompress = filesToCompress.filter(function(path){
               return !minimatch(path, ignorePattern, { matchBase: true });
             });
         }
-        return RSVP.map(filesToCompress, this._compressFile.bind(this, distDir));
+        return RSVP.map(filesToCompress, this._compressFile.bind(this, distDir, keep));
       },
-      _compressFile: function(distDir, filePath) {
+      _compressFile: function(distDir, keep, filePath) {
         var self = this;
         var fullPath = path.join(distDir, filePath);
         var outFilePath = fullPath + '.br';
@@ -76,6 +82,14 @@ module.exports = {
           out.on('finish', function(){
             resolve(filePath + '.br');
           });
+        }).then(function(){
+          if (!keep) {
+            return renameFile(fullPath + '.br', fullPath).then(function () {
+              return filePath;
+            });
+          } else {
+            return filePath + '.br';
+          }
         }).then(function(outFilePath){
           self.log('✔  ' + outFilePath, { verbose: true });
 
