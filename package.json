@@ -11,7 +11,7 @@
   "directories": {
     "test": "tests"
   },
-  "repository": "",
+  "repository": "https://github.com/mfeckie/ember-cli-deploy-brotli",
   "scripts": {
     "test": "node tests/runner.js && ./node_modules/.bin/eslint index.js tests/**/*.js"
   },
