@@ -13,29 +13,35 @@
   },
   "repository": "https://github.com/mfeckie/ember-cli-deploy-brotli",
   "scripts": {
-    "test": "node tests/runner.js && ./node_modules/.bin/eslint index.js tests/**/*.js"
+    "test": "eslint . && node tests/runner.js"
   },
   "dependencies": {
     "chalk": "2.3.0",
     "core-object": "3.1.5",
+    "ember-cli-babel": "^7.21.0",
     "ember-cli-deploy-plugin": "^0.2.6",
     "iltorb": "^2.0.0",
     "minimatch": "^3.0.4",
     "rsvp": "4.7.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "chai": "4.1.2",
     "chai-as-promised": "7.1.1",
-    "ember-cli": "^2.16.0",
+    "ember-cli": "^3.19.0",
     "ember-cli-release": "^1.0.0-beta.2",
-    "eslint": "4.10.0",
+    "eslint": "^7.1.0",
+    "eslint-plugin-node": "^11.1.0",
     "glob": "7.1.2",
     "mocha": "4.0.1",
     "multiline": "^1.0.2",
     "rimraf": "2.6.2"
   },
   "engines": {
-    "node": ">= 6"
+    "node": "10.* || >= 12"
+  },
+  "ember": {
+    "edition": "octane"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"

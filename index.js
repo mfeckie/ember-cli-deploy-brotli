@@ -1,4 +1,3 @@
-/*eslint-env node*/
 'use strict';
 
 var fs = require('fs');
@@ -13,7 +12,7 @@ var renameFile  = denodeify(fs.rename);
 var DeployPluginBase = require('ember-cli-deploy-plugin');
 
 module.exports = {
-  name: 'ember-cli-deploy-brotli',
+  name: require('./package').name,
 
   createDeployPlugin: function(options) {
     var fs = require('fs');
