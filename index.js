@@ -1,15 +1,15 @@
+/*eslint-env node*/
 'use strict';
 
-var fs = require('fs');
-var compressStream = require('iltorb').compressStream;
-var RSVP = require('rsvp');
-var path = require('path');
-var minimatch = require('minimatch');
+const RSVP   = require('rsvp');
+const fs        = require('fs');
+const path      = require('path');
+const minimatch = require('minimatch');
+const zlib = require('zlib');
+const denodeify = require('rsvp').denodeify;
+const renameFile  = denodeify(fs.rename);
 
-var denodeify = RSVP.denodeify;
-var renameFile  = denodeify(fs.rename);
-
-var DeployPluginBase = require('ember-cli-deploy-plugin');
+const DeployPluginBase = require('ember-cli-deploy-plugin');
 
 module.exports = {
   name: require('./package').name,
@@ -70,13 +70,13 @@ module.exports = {
         var fullPath = path.join(distDir, filePath);
         var outFilePath = fullPath + '.br';
         return new RSVP.Promise(function(resolve, reject) {
-          var brotliParams = {
-            quality: 11
-          };
+          const brotli = zlib.createBrotliCompress({ params: {
+            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+          } });
           var inp = fs.createReadStream(fullPath);
           var out = fs.createWriteStream(outFilePath);
 
-          inp.pipe(compressStream(brotliParams)).pipe(out);
+          inp.pipe(brotli).pipe(out);
           inp.on('error', function(err){
             reject(err);
           });
