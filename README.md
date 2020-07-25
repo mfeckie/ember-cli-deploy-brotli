@@ -1,8 +1,18 @@
 [![Build Status](https://travis-ci.org/mfeckie/ember-cli-deploy-brotli.svg?branch=master)](https://travis-ci.org/mfeckie/ember-cli-deploy-brotli)
 
-# Ember-cli-deploy-brotli
+ember-cli-deploy-brotli
+==============================================================================
 
 This plugin is heavily influenced by https://github.com/ember-cli-deploy/ember-cli-deploy-gzip, but provides brotli compression.
+
+Compatibility
+------------------------------------------------------------------------------
+
+* Ember CLI v2.13 or above
+* Node.js v10 or above
+
+Usage
+------------------------------------------------------------------------------
 
 ## What is an ember-cli-deploy plugin?
 
@@ -28,7 +38,6 @@ $ ember install ember-cli-deploy-brotli
 $ ember deploy
 ```
 
-## Installation
 
 Run the following command in your terminal:
 
@@ -90,14 +99,11 @@ The following properties are expected to be present on the deployment `context` 
 [ember-cli-deploy-build][2]
 [ember-cli-deploy-s3][3]
 
-## Running Tests
+Contributing
+------------------------------------------------------------------------------
+See the [Contributing](CONTRIBUTING.md) guide for details.
 
-* `yarn test`
 
-## Why `ember build` and `ember test` don't work
-
-Since this is a node-only ember-cli addon, this package does not include many files and dependencies which are part of ember-cli's typical `ember build` and `ember test` processes.
-
-[1]: http://ember-cli-deploy.github.io/ember-cli-deploy/plugins/ "Plugin Documentation"
-[2]: https://github.com/zapnito/ember-cli-deploy-build "ember-cli-deploy-build"
-[3]: https://github.com/zapnito/ember-cli-deploy-s3 "ember-cli-deploy-s3"
+License
+------------------------------------------------------------------------------
+This project is licensed under the [MIT License](LICENSE.md).
