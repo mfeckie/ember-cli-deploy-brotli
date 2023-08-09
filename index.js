@@ -71,7 +71,7 @@ module.exports = {
         var outFilePath = fullPath + '.br';
         return new RSVP.Promise(function(resolve, reject) {
           const brotli = zlib.createBrotliCompress({ params: {
-            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+            [zlib.constants.BROTLI_PARAM_QUALITY]: 9,
           } });
           var inp = fs.createReadStream(fullPath);
           var out = fs.createWriteStream(outFilePath);
