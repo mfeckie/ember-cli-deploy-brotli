@@ -59,6 +59,7 @@ describe('brotli plugin', function() {
         assert.isDefined(config.brotli.ignorePattern);
         assert.isDefined(config.brotli.distDir);
         assert.isDefined(config.brotli.distFiles);
+        assert.isDefined(config.brotli.compressionQuality);
       });
     });
   });
@@ -85,7 +86,8 @@ describe('brotli plugin', function() {
             filePattern: '**/*.js',
             ignorePattern: '**/ignore.*',
             distDir: function(context) { return context.distDir; },
-            distFiles: function(context) { return context.distFiles; }
+            distFiles: function(context) { return context.distFiles; },
+            compressionQuality: 11
           }
         }
       };
