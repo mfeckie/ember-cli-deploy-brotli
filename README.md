@@ -87,6 +87,12 @@ Keep original file and write compressed data to `originalFile.br`
 
 *Default:* `false`
 
+### compressionQuality
+
+Set the user specified compression quality level for Brotli.
+
+*Default:* `11`
+
 ## Prequisites
 
 The following properties are expected to be present on the deployment `context` object:

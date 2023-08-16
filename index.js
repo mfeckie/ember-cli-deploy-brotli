@@ -28,20 +28,22 @@ module.exports = {
         },
         distFiles: function(context){
           return context.distFiles;
-        }
+        },
+        compressionQuality: 11
       },
       willUpload: function() {
         var self = this;
 
-        var filePattern     = this.readConfig('filePattern');
-        var ignorePattern   = this.readConfig('ignorePattern');
-        var distDir         = this.readConfig('distDir');
-        var distFiles       = this.readConfig('distFiles') || [];
-        var keep            = this.readConfig('keep');
+        var filePattern         = this.readConfig('filePattern');
+        var ignorePattern       = this.readConfig('ignorePattern');
+        var distDir             = this.readConfig('distDir');
+        var distFiles           = this.readConfig('distFiles') || [];
+        var keep                = this.readConfig('keep');
+        var compressionQuality  = this.readConfig('compressionQuality');
 
         this.log('Compressing with brotli `' + filePattern + '`', { verbose: true });
         this.log('ignoring `' + ignorePattern + '`', { verbose: true });
-        return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern, keep)
+        return this._compressedFiles(distDir, distFiles, filePattern, ignorePattern, keep, compressionQuality)
           .then(function(brotliCompressedFiles) {
             self.log('Compressed with brotli ' + brotliCompressedFiles.length + ' files ok', { verbose: true });
             if (keep) {
@@ -56,22 +58,22 @@ module.exports = {
           })
           .catch(this._errorMessage.bind(this));
       },
-      _compressedFiles: function(distDir, distFiles, filePattern, ignorePattern, keep) {
+      _compressedFiles: function(distDir, distFiles, filePattern, ignorePattern, keep, compressionQuality) {
         var filesToCompress = distFiles.filter(minimatch.filter(filePattern, { matchBase: true }));
         if (ignorePattern != null) {
             filesToCompress = filesToCompress.filter(function(path){
               return !minimatch(path, ignorePattern, { matchBase: true });
             });
         }
-        return RSVP.map(filesToCompress, this._compressFile.bind(this, distDir, keep));
+        return RSVP.map(filesToCompress, this._compressFile.bind(this, distDir, keep, compressionQuality));
       },
-      _compressFile: function(distDir, keep, filePath) {
+      _compressFile: function(distDir, keep, compressionQuality, filePath) {
         var self = this;
         var fullPath = path.join(distDir, filePath);
         var outFilePath = fullPath + '.br';
         return new RSVP.Promise(function(resolve, reject) {
           const brotli = zlib.createBrotliCompress({ params: {
-            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
+            [zlib.constants.BROTLI_PARAM_QUALITY]: compressionQuality,
           } });
           var inp = fs.createReadStream(fullPath);
           var out = fs.createWriteStream(outFilePath);
