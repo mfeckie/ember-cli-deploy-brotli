@@ -1,0 +1,40 @@
+name: Publish to npm
+
+on:
+  workflow_run:
+    workflows: ["Node.js CI"]
+    types: [completed]
+
+jobs:
+  publish:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'master'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+    - uses: pnpm/action-setup@v4
+      with:
+        version: latest
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+        cache: 'pnpm'
+        registry-url: 'https://registry.npmjs.org'
+    - run: pnpm install
+    - name: Check for version change
+      id: version_check
+      run: |
+        if git diff HEAD~1 HEAD -- package.json | grep '"version"'; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+    - name: Publish
+      if: steps.version_check.outputs.changed == 'true'
+      run: pnpm publish --no-git-checks
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
